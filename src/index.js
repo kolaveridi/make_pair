@@ -73,7 +73,7 @@ class Game extends React.Component{
            previousRow:row,
         })
      }
-      else if(previousval===val && row !== this.state.previousRow && column !== this.state.previousCol){
+      else if(previousval===val && !(row === this.state.previousRow && column === this.state.previousCol)){
           this.setState({
             total:this.state.total+10,
             previousval:'',
