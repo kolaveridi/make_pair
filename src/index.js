@@ -4,80 +4,132 @@ import './index.css';
 class Game extends React.Component{
   constructor(props){
    super(props);
+
+      this.grid = this.initialize(4);
+      this.rows = 4;
+      this.columns = 4;
+
       this.state ={
           value:'',
-          arr:Array(15).fill(null),
-          flag:Array(15).fill(false),
-          toshow:true,
-
+          arr:this.grid,
           previousval:'',
-          previousindex:'',
+          previousRow:'',
+          previousCol:'',
+          'currentindex':'',
           total:0
-
       }
-  }
-  clickfun= (val,index) =>{
-      console.log('clicked');
-      const arr=this.state.arr.slice();
-      arr[index]=val;
-       this.setState({
-       value:val,
-       arr:arr
-     })
-     console.log(arr);
 
-     var previousindex=this.state.previousindex;
+  }
+
+  range = (start,end) => {
+    return Array(end-start).fill(null).map((val,index) => start+index);
+  }
+
+  shuffle = (array) => {
+    for(var i = 0; i < array.length; i++) {
+      let destination = Math.floor(Math.random() * (array.length - i));
+      let temp = array[i];
+      array[i] = array[destination];
+      array[destination] = temp
+    }
+
+    return array;
+  }
+
+  initialize = (size) => {
+    var oneHalf = Array((size*size)/2).fill(null).map((_,index) => String.fromCharCode(65+index));
+    var whole = oneHalf.concat(oneHalf.slice());
+    var shuffled = this.shuffle(whole)
+
+    var grid = []
+    for (var i = 0; i < size; i ++) {
+      var row = []
+      for (var j = 0; j < size; j++) {
+        row.push({
+          'value':shuffled[i*size+j],
+          'revealed':false,
+        });
+      }
+      grid.push(row);
+    }
+    console.log(grid);
+    return grid;
+  }
+
+  clickfun= (val,row,column) =>{
+
+    this.setState(() => {
+      this.state.arr[row][column].revealed = true;
+      return { 'arr' : this.state.arr};
+    });
+     var previousRow =this.state.previousRow;
+     var previousCol = this.state.previousCol;
      var previousval=this.state.previousval;
      if(previousval===''){
         this.setState({
            previousval:val,
-           previousindex:index
+           previousCol:column,
+           previousRow:row,
         })
      }
       else if(previousval!=='' && previousval===val){
           this.setState({
             total:this.state.total+10,
             previousval:'',
-            previousindex:'',
+            previousCol:'',
+            previousRow:'',
           })
      }
         else{
         const arr=this.state.arr.slice();
+        let prevRow = this.state.previousRow;
+        let prevCol = this.state.previousCol;
+        let theRow = row;
+        let theCol = column;
+
          setTimeout(()=>{
-           arr[previousindex]='';
-           arr[index]='';
-           this.setState({
-             arr:arr,
-             previousval:'',
-             previousindex:''
-           })
+           this.setState(() => {
+             this.state.arr[theRow][theCol].revealed = false;
+             this.state.arr[prevRow][prevCol].revealed = false;
+             return {
+                  'grid' : this.state.arr,
+                  'previousval' : '',
+                  'previousRow' : '',
+                  'previousCol' : '',
+              };
+           });
          }
             , 500);
 
      }
   };
+
+   renderGrid = () => {
+     let component = this;
+     return this.range(0,this.rows).map((row)=> {
+      return <div className="cards1">
+        {
+          this.range(0,component.columns).map((column) => {
+            let letter = component.state.arr[row][column].value;
+            let displayed = (component.state.arr[row][column].revealed) ? letter : "";
+           return  <button className="button" onClick={()=>component.clickfun(letter,row,column)}>{displayed}</button>;
+         })
+        }
+
+   </div>;
+
+ });
+ }
+
    render(){
       return(
         <div className="Cards">
         <h1>Match Pair </h1>
-        <div className="cards1">
-         <button className="button" onClick={()=>this.clickfun('A',0)}>{this.state.arr[0]}</button>
-         <button className="button" onClick={()=>this.clickfun('B',1)}>{this.state.arr[1]}</button>
-         <button className="button" onClick={()=>this.clickfun('C',2)}>{this.state.arr[2]}</button>
-         <button className="button" onClick={()=>this.clickfun('D',3)}>{this.state.arr[3]}</button>
-         </div>
-         <div className="cards2">
-          <button className="button" onClick={()=>this.clickfun('C',4)}>{this.state.arr[4]}</button>
-          <button  className="button"onClick={()=>this.clickfun('D',5)}>{this.state.arr[5]}</button>
-          <button className="button" onClick={()=>this.clickfun('E',6)}>{this.state.arr[6]}</button>
-          <button className="button" onClick={()=>this.clickfun('F',7)}>{this.state.arr[7]}</button>
-          </div>
-          <div className="cards3">
-           <button className="button" onClick={()=>this.clickfun('G',8)}>{this.state.arr[8]}</button>
-           <button className="button" onClick={()=>this.clickfun('H',9)}>{this.state.arr[9]}</button>
-           <button className="button" onClick={()=>this.clickfun('G',10)}>{this.state.arr[10]}</button>
-           <button className="button" onClick={()=>this.clickfun('H',11)}>{this.state.arr[11]}</button>
-           </div>
+        {
+          this.renderGrid()
+
+        }
+      }
            <h2>Score{this.state.total}</h2>
        </div>
 
