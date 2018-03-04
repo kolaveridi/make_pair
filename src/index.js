@@ -9,6 +9,7 @@ class Game extends React.Component{
       this.grid = this.initialize(this.size);
       this.rows = this.size;
       this.columns = this.size;
+      this.lastValueCleared = true;
 
       this.state ={
           value:'',
@@ -58,6 +59,14 @@ class Game extends React.Component{
 
   clickfun= (val,row,column) =>{
 
+    if (!this.lastValueCleared) {
+      return;
+    }
+
+    if(this.state.arr[row][column].revealed) {
+      return;
+    }
+
     this.setState(() => {
       this.state.arr[row][column].revealed = true;
       return { 'arr' : this.state.arr};
@@ -73,7 +82,8 @@ class Game extends React.Component{
            previousRow:row,
         })
      }
-      else if(previousval===val && !(row === this.state.previousRow && column === this.state.previousCol)){
+      else if(previousval===val && !(row === this.state.previousRow && column === this.state.previousCol)
+    ){
           this.setState({
             total:this.state.total+10,
             previousval:'',
@@ -87,8 +97,10 @@ class Game extends React.Component{
         let prevCol = this.state.previousCol;
         let theRow = row;
         let theCol = column;
+        this.lastValueCleared = false;
 
          setTimeout(()=>{
+           this.lastValueCleared = true;
            this.setState(() => {
              this.state.arr[theRow][theCol].revealed = false;
              this.state.arr[prevRow][prevCol].revealed = false;
