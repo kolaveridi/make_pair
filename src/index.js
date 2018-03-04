@@ -5,14 +5,15 @@ class Game extends React.Component{
   constructor(props){
    super(props);
 
-      this.grid = this.initialize(4);
-      this.rows = 4;
-      this.columns = 4;
+      this.size = 8; // now bigger sizes work but it needs power of two can be improved
+      this.grid = this.initialize(this.size);
+      this.rows = this.size;
+      this.columns = this.size;
 
       this.state ={
           value:'',
           arr:this.grid,
-          previousval:'',
+          previousval:'', // use camel case .. previousVal
           previousRow:'',
           previousCol:'',
           'currentindex':'',
@@ -52,7 +53,6 @@ class Game extends React.Component{
       }
       grid.push(row);
     }
-    console.log(grid);
     return grid;
   }
 
@@ -62,6 +62,7 @@ class Game extends React.Component{
       this.state.arr[row][column].revealed = true;
       return { 'arr' : this.state.arr};
     });
+    // get rid of previousVal as it can be obtained from previous row
      var previousRow =this.state.previousRow;
      var previousCol = this.state.previousCol;
      var previousval=this.state.previousval;
@@ -72,7 +73,7 @@ class Game extends React.Component{
            previousRow:row,
         })
      }
-      else if(previousval!=='' && previousval===val){
+      else if(previousval===val && row !== this.state.previousRow && column !== this.state.previousCol){
           this.setState({
             total:this.state.total+10,
             previousval:'',
@@ -105,6 +106,8 @@ class Game extends React.Component{
   };
 
    renderGrid = () => {
+     // this is hacky make this a functional component
+     // range should be separate util method
      let component = this;
      return this.range(0,this.rows).map((row)=> {
       return <div className="cards1">
