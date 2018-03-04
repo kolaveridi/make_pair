@@ -132,8 +132,8 @@ class Game extends React.Component{
           this.renderGrid()
 
         }
-      }
-           <h2>Score{this.state.total}</h2>
+
+           <h2>Score : {this.state.total}</h2>
        </div>
 
 

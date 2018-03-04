@@ -12,15 +12,19 @@ body {
   border-radius: 1px;
   border-color: black;
   border-width: 1px;
+  font-size: 40px;
 
 
+}
+button:hover {
+    background-color: lightgray;
 }
 .Cards{
   padding-left: 500px;
   padding-top: 50px;
   box-sizing: 500px;
-  width: 240px;
-  height: 240px;
+  width: 75%;
+  height: 75%;
 
 }
 .cards1,.cards2,.cards3{
